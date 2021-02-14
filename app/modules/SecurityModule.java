@@ -37,6 +37,7 @@ import org.pac4j.play.http.PlayHttpActionAdapter;
 import org.pac4j.play.store.PlayCacheSessionStore;
 import org.pac4j.saml.client.SAML2Client;
 import org.pac4j.saml.config.SAML2Configuration;
+import com.nimbusds.jose.JWSAlgorithm;
 import play.Environment;
 
 import java.io.File;
@@ -136,13 +137,18 @@ public class SecurityModule extends AbstractModule {
         return new SAML2Client(cfg);
     }
 
+//    oidc.discoveryUri = "http://localhost:8080/auth/realms/monmon/.well-known/openid-configuration"
+//    oidc.clientId = "monmon-web"
+//    oidc.clientSecret = "01c283f5-69ff-42e4-a080-971629656fbb"
+
     @Provides @Singleton
     protected OidcClient provideOidcClient() {
         final OidcConfiguration oidcConfiguration = new OidcConfiguration();
-        oidcConfiguration.setClientId("343992089165-i1es0qvej18asl33mvlbeq750i3ko32k.apps.googleusercontent.com");
-        oidcConfiguration.setSecret("unXK_RSCbCXLTic2JACTiAo9");
-        oidcConfiguration.setDiscoveryURI("https://accounts.google.com/.well-known/openid-configuration");
+        oidcConfiguration.setClientId("monmon-web");
+        oidcConfiguration.setSecret("01c283f5-69ff-42e4-a080-971629656fbb");
+        oidcConfiguration.setDiscoveryURI("http://localhost:8080/auth/realms/monmon/.well-known/openid-configuration");
         oidcConfiguration.addCustomParam("prompt", "consent");
+        oidcConfiguration.setPreferredJwsAlgorithm(JWSAlgorithm.RS256);
         final OidcClient oidcClient = new OidcClient(oidcConfiguration);
         oidcClient.addAuthorizationGenerator((ctx, session, profile) -> { profile.addRole("ROLE_ADMIN"); return Optional.of(profile); });
         return oidcClient;
